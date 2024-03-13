@@ -5,7 +5,7 @@ Cette étude se propose de déterminer les risques de défaut des clients d'une 
 ## 2. ETAPES DE REALISATION
 
 ### 2.1 Importation des librairies
-Les packages de base ont été importés dans un premier temps, notamment Pandas, numpy, Matplolib, Seaborn.
+Les packages de base ont été importés dans un premier temps, notamment Pandas, numpy, Matplolib, Seaborn. Les bibliothèques utilisées sont listées dans le fichier "requirement.txt".
 
 ### 2.2 Structure globale du travail
 Pour une meilleure lisibilité du code principal, le fichier "risk_utils.py" a été créé pour héberger toutes les fonctions nécessaires pour ce projet. Ces dernières sont y sont d'ailleurs décrites. Ainsi, lesdites fonctions sont appelées dans le fichier principal "Notebook_risk.ipynb" pour exécution.
