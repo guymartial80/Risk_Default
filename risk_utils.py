@@ -111,6 +111,9 @@ def transform_dataset(df):
                                            9: 'delayed >=9 month'}
     
 
+    # Supprimer la colonne 'id'
+    df.drop(columns=['id'], inplace=True)
+
     # Conversion des variables en type catégoriel
     df['sex'] = df['sex'].map(gender_mapping).astype('category')
     df['education'] = df['education'].map(education_mapping).astype('category')
@@ -127,7 +130,7 @@ def transform_dataset(df):
 
 
 def re_transform_dataset(df):
-
+    # Recupérer toutes les colonnes relatives à l'état de remboursement mensuel
     payment_status_cols = ['payment_status_sept','payment_status_aug','payment_status_july','payment_status_june','payment_status_may','payment_status_april',]
     
     gender_mapping = {'Male':1, 
@@ -138,9 +141,9 @@ def re_transform_dataset(df):
                          'Graduate school':1,
                          'University':2,
                          'High school':3,
-                        'Others':4,
-                        'Others':5,
-                        'Others':6}
+                         'Others':4,
+                         'Others':5,
+                         'Others':6}
     
     
     marriage_mapping = {'Others':0,
@@ -167,12 +170,9 @@ def re_transform_dataset(df):
         df[col] = df[col].map(payment_status_description_mapping).astype('int64')
         
     
-    df['sex'] = df['sex'].map(gender_mapping).astype('category')
-    df['education'] = df['education'].map(education_mapping).astype('category')
-    df['marriage'] = df['marriage'].map(marriage_mapping).astype('category')
-
-    # Supprimer la colonne 'id'
-    df.drop(columns=['id'], inplace=True)
+    df['sex'] = df['sex'].map(gender_mapping).astype('object')
+    df['education'] = df['education'].map(education_mapping).astype('object')
+    df['marriage'] = df['marriage'].map(marriage_mapping).astype('object')
 
     # Exportation du DataFrame en fichier CSV
     df.to_csv('default_of_credit_card_clients_for_model.csv', index=False)
@@ -341,7 +341,7 @@ def select_numeric_columns_corr(df):
     
     Args:
     - df: DataFrame pandas contenant les variables à afficher.
-    """
+    """    
     numeric_columns = df.select_dtypes(include=['number']).columns
     return df[numeric_columns]
 
@@ -420,17 +420,11 @@ def remove_outliers(df):
 
 
 
-def evaluate_classification_model(X_train, y_train, X_test, y_test, seed=None):
-    # Instanciation du modèle
-    rfc_model = RandomForestClassifier(random_state=seed)
+def metrics_best_model(pipeline, X_test, y_test):
+    # Prédictions sur l'ensemble de validation
+    y_pred = pipeline.predict(X_test)
     
-    # Entraînement du modèle
-    rfc_model.fit(X_train, y_train)
-    
-    # Prédictions sur l'ensemble de test
-    y_pred = rfc_model.predict(X_test)
-    
-    # Convertir les valeurs de y_true en valeurs numériques
+    # Convertir les valeurs de y_val en valeurs numériques
     y_test_numeric = y_test.replace({'Yes': 1, 'No': 0})
     
     # Convertir les valeurs de y_pred en valeurs numériques
@@ -454,7 +448,7 @@ def evaluate_classification_model(X_train, y_train, X_test, y_test, seed=None):
     axes[0].set_title('Confusion Matrix')
 
     # Courbe ROC AUC
-    y_pred_proba = rfc_model.predict_proba(X_test)[:, 1]
+    y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
     fpr, tpr, thresholds = roc_curve(y_test_numeric, y_pred_proba)
     auc = roc_auc_score(y_test_numeric, y_pred_proba)
     axes[1].plot(fpr, tpr, label='ROC curve (area = %0.2f)' % auc)
@@ -469,5 +463,99 @@ def evaluate_classification_model(X_train, y_train, X_test, y_test, seed=None):
     plt.tight_layout()
     plt.show()
 
+
+def evaluate_and_find_best_model(pipelines, X_val, y_val, X_train, y_train, X_test, y_test):
+    best_model = None
+    best_score = 0
+    
+    for model_name, pipeline in pipelines.items():
+        print(f"Evaluation du modèle {model_name}:")
+        # Prédictions sur l'ensemble de validation
+        y_pred = pipeline.predict(X_val)
+
+        # Convertir les valeurs de y_val en valeurs numériques
+        y_val_numeric = y_val.replace({'Yes': 1, 'No': 0})
+
+        # Convertir les valeurs de y_pred en valeurs numériques
+        y_pred_numeric = pd.Series(y_pred).replace({'Yes': 1, 'No': 0})
+
+        # Calcul du rapport de classification
+        cr = classification_report(y_val_numeric, y_pred_numeric)
+        print("Classification Report:")
+        print(cr)
+
+        # Calcul de la matrice de confusion
+        cm = confusion_matrix(y_val_numeric, y_pred_numeric)
+
+        # Affichage du graphique de la matrice de confusion et de la courbe ROC sur la même ligne
+        fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+        # Matrice de confusion
+        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', cbar=False, ax=axes[0])
+        axes[0].set_xlabel('Predicted labels')
+        axes[0].set_ylabel('True labels')
+        axes[0].set_title('Confusion Matrix')
+
+        # Courbe ROC AUC
+        y_pred_proba = pipeline.predict_proba(X_val)[:, 1]
+        fpr, tpr, thresholds = roc_curve(y_val_numeric, y_pred_proba)
+        auc = roc_auc_score(y_val_numeric, y_pred_proba)
+        axes[1].plot(fpr, tpr, label='ROC curve (area = %0.2f)' % auc)
+        axes[1].plot([0, 1], [0, 1], 'k--')
+        axes[1].set_xlim([0.0, 1.0])
+        axes[1].set_ylim([0.0, 1.05])
+        axes[1].set_xlabel('False Positive Rate')
+        axes[1].set_ylabel('True Positive Rate')
+        axes[1].set_title('Receiver Operating Characteristic (ROC)')
+        axes[1].legend(loc="lower right")
+
+        plt.tight_layout()
+        plt.show()
+        
+        # Comparer avec le meilleur score actuel
+        if auc > best_score:
+            best_model = pipeline
+            best_score = auc
+    
+    print("Meilleur modèle sélectionné:")
+    print(best_model)
+
+    # Identifier le meilleur modèle en fonction des performances sur les données de validation
+    best_model_name = max(pipelines.keys(), key=lambda k: roc_auc_score(y_val_numeric, pipeline.predict_proba(X_val)[:, 1]))
+
+    # Définir la grille de recherche des hyperparamètres pour le meilleur modèle
+    if best_model_name == 'RandomForestClassifier':
+        # Définir la grille de recherche des hyperparamètres pour le RandomForestClassifier
+        param_grid = {
+                "model__criterion": ["entropy", "gini"],
+                "model__max_depth": range(7, 11),
+                "model__n_estimators": [100, 150, 200]
+        }  
+        best_model_pipeline = pipelines[best_model_name]
+
+    elif best_model_name == 'LogisticRegression':
+        # Définir la grille de recherche des hyperparamètres pour la LogisticRegression
+        param_grid = [{
+            'penalty':['l1','l2'],
+            'C':[0.001,0.01,0.05,0.1,0.5,1.0,10.0,100.0]
+        }]
+
+        best_model_pipeline = pipelines[best_model_name]
+
+    # Exécuter la GridSearchCV sur le meilleur modèle avec la grille de recherche des hyperparamètres
+    grid_search = GridSearchCV(best_model_pipeline, param_grid, cv=5, scoring='roc_auc')
+    grid_search.fit(X_train, y_train)
+
+    # Identifier les meilleurs hyperparamètres
+    best_params = grid_search.best_params_
+
+    # Entraîner le modèle avec les meilleurs hyperparamètres sur l'ensemble de données complet
+    best_model_pipeline.set_params(**best_params)
+    best_model_pipeline.fit(X_test, y_test)
+    
+    # Afficher le rapport de classification, la matrice de confusion et la courbe ROC pour le meilleur modèle
+    metrics_best_model(best_model_pipeline, X_test, y_test)
+    
+    return best_model_pipeline, best_params
 
 
