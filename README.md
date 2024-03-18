@@ -27,16 +27,16 @@ A cette étape, plusieurs démarches ont été sollicitées pour faciliter l'ana
 - Les statistiques bivariées pour les variables  de type numérique : cela s'est fait par la matrice des corrélations et les boites à moustache.
 
 ### 2.5 Preprocessing
-- Séparation des variables de type catégoriel de ceux de type numérique ;
-- Création d'un pipeline pour l'encodage des données;
-- Instanciation de l'estimateur RandomForestClassifier dans le pipeline.
+- Séparation des variables : type catégoriel nominal, type catégoriel ordinal et type numérique ;
+- Création d'un pipeline pour l'encodage des données ainsi catégorisées ;
+- Instanciation des estimateurs RandomForestClassifier et LogisticRegression dans le pipeline.
 
 ### 2.6 Machine Learning
 - Séparation des variables (explicatives et expliquée);
 - Séparation en base d'entrainement, validation et test;
-- Entrainement du pipeline;
-- Modélisation, évaluation du modèle entrainé;
-- Recherche des meilleurs hyperparamètres avec GridSearchCV
+- Entrainement des modèles du pipeline;
+- Modélisation, évaluation des modèles entrainés et recherche des meilleurs hyperparamètres avec GridSearchCV;
+- Modélisation du meilleur modèle avec les meilleurs hyperparamètres dans la base de test
 
 
 ## 3. LIBRAIRIES UTILISEES
