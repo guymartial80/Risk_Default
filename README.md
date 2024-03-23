@@ -1,3 +1,9 @@
+## SOMMAIRE
+
+- [DESCRIPTION DU PROJET](#1.-DESCRIPTION)
+- [ETAPES DE REALISATION](#2.-ETAPES-DE-REALISATION)
+- [LIBRAIRIES UTILISEES](#3.-LIBRAIRIES-UTILISEES)
+
 ## 1. DESCRIPTION
 
 Cette étude se propose de déterminer les risques de défaut des clients d'une banque Taïwanaise. Nous allons utiliser le modèle de classification basé sur les forêts aléatoires pour y arriver. De plus, nous rechercherons les meilleurs hyperparamètres qui optimiseront les performances de notre modèle.
@@ -38,11 +44,14 @@ A cette étape, plusieurs démarches ont été sollicitées pour faciliter l'ana
 - Modélisation, évaluation des modèles entrainés et recherche des meilleurs hyperparamètres avec GridSearchCV;
 - Modélisation du meilleur modèle avec les meilleurs hyperparamètres dans la base de test
 
+### 2.7 Résultats obtenus
+- Le processus de modélisation a revélé, après détermination du meilleur modèle de Machine Learning et recherche des meilleurs hyperparamètres à adopter pour ledit modèle, que le RandomForest est meilleur que la Régression Logistique dans ce contexte et les hyperparamètres les mieux adaptés pour l'obtention d'un meilleur résultat sont:
+  - {'model__criterion': 'entropy';
+  - 'model__max_depth': 7;
+  - 'model__n_estimators': 100})
+La courbe ROC du meilleur modèle est ci-dessous illustrée :
+
+![Results](https://github.com/guymartial80/Risk_Default/blob/main/best_output.png)
 
 ## 3. LIBRAIRIES UTILISEES
 ![Static Badge](https://img.shields.io/badge/Pandas-black?style=for-the-badge&logo=Pandas) ![Static Badge](https://img.shields.io/badge/Scikit-learn-black?style=for-the-badge&logo=Scikit-learn) ![Static Badge](https://img.shields.io/badge/Numpy-black?style=for-the-badge&logo=Numpy) ![Static Badge](https://img.shields.io/badge/Matplotlib-black?style=for-the-badge&logo=Matplotlib) ![Static Badge](https://img.shields.io/badge/Seaborn-black?style=for-the-badge&logo=Seaborn)
-
-
-
-
-
