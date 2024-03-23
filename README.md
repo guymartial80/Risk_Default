@@ -51,7 +51,7 @@ A cette étape, plusieurs démarches ont été sollicitées pour faciliter l'ana
   - 'model__n_estimators': 100})
 La courbe ROC du meilleur modèle est ci-dessous illustrée :
 
-![Results](https://github.com/guymartial80/Risk_Default/blob/main/best_output.png)
+![Results](https://github.com/guymartial80/Risk_Default/blob/main/best_model_output.png)
 
 ## 3. LIBRAIRIES UTILISEES
 ![Static Badge](https://img.shields.io/badge/Pandas-black?style=for-the-badge&logo=Pandas) ![Static Badge](https://img.shields.io/badge/Scikit-learn-black?style=for-the-badge&logo=Scikit-learn) ![Static Badge](https://img.shields.io/badge/Numpy-black?style=for-the-badge&logo=Numpy) ![Static Badge](https://img.shields.io/badge/Matplotlib-black?style=for-the-badge&logo=Matplotlib) ![Static Badge](https://img.shields.io/badge/Seaborn-black?style=for-the-badge&logo=Seaborn)
