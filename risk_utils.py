@@ -451,7 +451,7 @@ def metrics_best_model(pipeline, X_test, y_test):
     y_pred_proba = pipeline.predict_proba(X_test)[:, 1]
     fpr, tpr, thresholds = roc_curve(y_test_numeric, y_pred_proba)
     auc = roc_auc_score(y_test_numeric, y_pred_proba)
-    axes[1].plot(fpr, tpr, label='ROC curve (area = %0.2f)' % auc)
+    axes[1].plot(fpr, tpr, color='orange', label='ROC curve (area = %0.2f)' % auc)
     axes[1].plot([0, 1], [0, 1], 'k--')
     axes[1].set_xlim([0.0, 1.0])
     axes[1].set_ylim([0.0, 1.05])
@@ -500,7 +500,7 @@ def evaluate_and_find_best_model(pipelines, X_val, y_val, X_train, y_train, X_te
         y_pred_proba = pipeline.predict_proba(X_val)[:, 1]
         fpr, tpr, thresholds = roc_curve(y_val_numeric, y_pred_proba)
         auc = roc_auc_score(y_val_numeric, y_pred_proba)
-        axes[1].plot(fpr, tpr, label='ROC curve (area = %0.2f)' % auc)
+        axes[1].plot(fpr, tpr, color='orange', label='ROC curve (area = %0.2f)' % auc)
         axes[1].plot([0, 1], [0, 1], 'k--')
         axes[1].set_xlim([0.0, 1.0])
         axes[1].set_ylim([0.0, 1.05])
